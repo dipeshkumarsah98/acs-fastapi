@@ -1,0 +1,524 @@
+{% extends "base.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Loading State -->
+        <div id="loading-state" class="text-center py-12">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-t-transparent"></div>
+            <p class="mt-4 text-gray-600">Loading settings...</p>
+        </div>
+
+        <!-- Settings Content (initially hidden) -->
+        <div id="settings-content" class="hidden space-y-6">
+            <div class="flex items-center justify-between">
+                <h1 class="text-2xl font-bold text-gray-900">Account Settings</h1>
+                <div id="success-message" class="hidden">
+                    <div class="rounded-md bg-green-50 p-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium text-green-800" id="success-text"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Settings -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-lg font-medium text-gray-900">Profile Settings</h2>
+                </div>
+                <div class="p-6">
+                    <form id="profile-form" class="space-y-6">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                            <div class="mt-1">
+                                <input type="text" id="name" name="name" required
+                                    class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                    placeholder="Enter your full name">
+                            </div>
+                            <p class="mt-2 text-sm text-gray-500">Your full name as it will appear to other users.</p>
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                            <div class="mt-1">
+                                <input type="email" id="email" name="email" required
+                                    class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                    placeholder="Enter your email address">
+                            </div>
+                            <p class="mt-2 text-sm text-gray-500">Your email address for notifications and account recovery.</p>
+                        </div>
+                        <div class="flex justify-end">
+                            <button type="submit" id="save-profile-btn"
+                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled>
+                                Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Password Settings -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-lg font-medium text-gray-900">Change Password</h2>
+                </div>
+                <div class="p-6">
+                    <!-- Show error message here -->
+                    <div id="password-error" class="hidden mb-4">
+                        <div class="rounded-md bg-red-50 p-4">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm font-medium text-red-800" id="password-error-text"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <form id="password-form" class="space-y-6">
+                        <div>
+                            <label for="current-password" class="block text-sm font-medium text-gray-700">Current Password</label>
+                            <div class="mt-1 relative">
+                                <input type="password" id="current-password" name="current-password" required
+                                    class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm pr-10"
+                                    placeholder="Enter your current password">
+                                <button type="button" class="toggle-password absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-500 focus:outline-none">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="new-password" class="block text-sm font-medium text-gray-700">New Password</label>
+                            <div class="mt-1 relative">
+                                <input type="password" id="new-password" name="new-password" required
+                                    class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm pr-10"
+                                    placeholder="Enter your new password">
+                                <button type="button" class="toggle-password absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-500 focus:outline-none">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="confirm-password" class="block text-sm font-medium text-gray-700">Confirm New Password</label>
+                            <div class="mt-1 relative">
+                                <input type="password" id="confirm-password" name="confirm-password" required
+                                    class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm pr-10"
+                                    placeholder="Confirm your new password">
+                                <button type="button" class="toggle-password absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-500 focus:outline-none">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Password Requirements -->
+                        <div class="bg-gray-50 p-4 rounded-md">
+                            <h3 class="text-sm font-medium text-gray-700 mb-2">Password Requirements:</h3>
+                            <ul id="password-criteria" class="space-y-2 text-sm text-gray-600">
+                                <li class="flex items-start" data-criteria="length">
+                                    <span class="criteria-icon mr-2"></span>
+                                    <span class="criteria-text">12-16 characters long (14+ recommended)</span>
+                                </li>
+                                <li class="flex items-start" data-criteria="uppercase">
+                                    <span class="criteria-icon mr-2"></span>
+                                    <span class="criteria-text">At least one uppercase letter</span>
+                                </li>
+                                <li class="flex items-start" data-criteria="lowercase">
+                                    <span class="criteria-icon mr-2"></span>
+                                    <span class="criteria-text">At least one lowercase letter</span>
+                                </li>
+                                <li class="flex items-start" data-criteria="number">
+                                    <span class="criteria-icon mr-2"></span>
+                                    <span class="criteria-text">At least one number</span>
+                                </li>
+                                <li class="flex items-start" data-criteria="symbol">
+                                    <span class="criteria-icon mr-2"></span>
+                                    <span class="criteria-text">At least one special character</span>
+                                </li>
+                                <li class="flex items-start" data-criteria="sequential">
+                                    <span class="criteria-icon mr-2"></span>
+                                    <span class="criteria-text">No sequential characters (e.g., 123, abc)</span>
+                                </li>
+                                <li class="flex items-start" data-criteria="repetitive">
+                                    <span class="criteria-icon mr-2"></span>
+                                    <span class="criteria-text">No repetitive characters (e.g., aaa, 111)</span>
+                                </li>
+                                <li class="flex items-start" data-criteria="personal-info">
+                                    <span class="criteria-icon mr-2"></span>
+                                    <span class="criteria-text">No personal information (name, email)</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="flex justify-end">
+                            <button type="submit" id="update-password-btn"
+                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled>
+                                Update Password
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Notification Settings -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-lg font-medium text-gray-900">Notification Settings</h2>
+                </div>
+                <div class="p-6">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-900">Email Notifications</h3>
+                                <p class="text-sm text-gray-500">Receive email updates about your account activity</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="email-notifications" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-900">Community Updates</h3>
+                                <p class="text-sm text-gray-500">Get notified about new posts in your communities</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="community-updates" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error State (initially hidden) -->
+        <div id="error-state" class="hidden text-center py-12">
+            <div class="text-red-600 mb-4">
+                <svg class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">Authentication Required</h3>
+            <p class="text-gray-600 mb-4">Please log in to access your settings.</p>
+            <a href="/login" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                Go to Login
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', async function() {
+    const token = localStorage.getItem('access_token');
+    const loadingState = document.getElementById('loading-state');
+    const settingsContent = document.getElementById('settings-content');
+    const errorState = document.getElementById('error-state');
+
+    if (!token) {
+        showError();
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/me', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Authentication failed');
+        }
+
+        const user = await response.json();
+        showSettings(user);
+        setupEventListeners();
+    } catch (error) {
+        console.error('Settings loading error:', error);
+        showError();
+    }
+});
+
+function showSettings(user) {
+    document.getElementById('loading-state').classList.add('hidden');
+    const settingsContent = document.getElementById('settings-content');
+    settingsContent.classList.remove('hidden');
+
+    document.getElementById('name').value = user.name;
+    document.getElementById('email').value = user.email;
+}
+
+function showSuccess(message) {
+    const successMessage = document.getElementById('success-message');
+    const successText = document.getElementById('success-text');
+    successText.textContent = message;
+    successMessage.classList.remove('hidden');
+    
+    // Hide success message after 3 seconds
+    setTimeout(() => {
+        successMessage.classList.add('hidden');
+    }, 3000);
+}
+
+function showError(message) {
+    document.getElementById('loading-state').classList.add('hidden');
+    document.getElementById('error-state').classList.remove('hidden');
+    document.getElementById('settings-content').classList.add('hidden');
+}
+
+function showPasswordError(message) {
+    const errorDiv = document.getElementById('password-error');
+    const errorText = document.getElementById('password-error-text');
+    errorText.textContent = message;
+    errorDiv.classList.remove('hidden');
+    
+    // Hide error message after 5 seconds
+    setTimeout(() => {
+        errorDiv.classList.add('hidden');
+    }, 5000);
+}
+
+function setupEventListeners() {
+    // Profile form change detection
+    const profileForm = document.getElementById('profile-form');
+    const saveProfileBtn = document.getElementById('save-profile-btn');
+    const initialProfileData = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value
+    };
+
+    function checkProfileChanges() {
+        const currentData = {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value
+        };
+        const hasChanges = currentData.name !== initialProfileData.name || 
+                          currentData.email !== initialProfileData.email;
+        saveProfileBtn.disabled = !hasChanges;
+    }
+
+    profileForm.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', checkProfileChanges);
+    });
+
+    // Password form change detection
+    const passwordForm = document.getElementById('password-form');
+    const updatePasswordBtn = document.getElementById('update-password-btn');
+    const initialPasswordData = {
+        current: '',
+        new: '',
+        confirm: ''
+    };
+
+    function checkPasswordChanges() {
+        const currentData = {
+            current: document.getElementById('current-password').value,
+            new: document.getElementById('new-password').value,
+            confirm: document.getElementById('confirm-password').value
+        };
+        const hasChanges = currentData.current !== initialPasswordData.current || 
+                          currentData.new !== initialPasswordData.new || 
+                          currentData.confirm !== initialPasswordData.confirm;
+        updatePasswordBtn.disabled = !hasChanges;
+    }
+
+    passwordForm.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', checkPasswordChanges);
+    });
+
+    // Password validation
+    const passwordInput = document.getElementById('new-password');
+    const criteria = {
+        length: /^.{12,16}$/,
+        uppercase: /[A-Z]/,
+        lowercase: /[a-z]/,
+        number: /[0-9]/,
+        symbol: /[!@#$%^&*(),.?":{}|<>]/,
+        sequential: /(abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz|123|234|345|456|567|678|789|890)/i,
+        repetitive: /(.)\1{2,}/,
+        'personal-info': function(value) {
+            const name = document.getElementById('name').value.toLowerCase();
+            const email = document.getElementById('email').value.toLowerCase();
+            const password = value.toLowerCase();
+            return !password.includes(name) && !password.includes(email);
+        }
+    };
+
+    function updateCriteriaIcons() {
+        const password = passwordInput.value;
+        Object.keys(criteria).forEach(key => {
+            const element = document.querySelector(`[data-criteria="${key}"]`);
+            const icon = element.querySelector('.criteria-icon');
+            let isValid = false;
+
+            if (typeof criteria[key] === 'function') {
+                isValid = criteria[key](password);
+            } else {
+                isValid = criteria[key].test(password);
+            }
+
+            if (isValid) {
+                icon.innerHTML = `
+                    <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                `;
+                element.classList.add('text-green-600');
+                element.classList.remove('text-gray-600');
+            } else {
+                icon.innerHTML = `
+                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                `;
+                element.classList.remove('text-green-600');
+                element.classList.add('text-gray-600');
+            }
+        });
+    }
+
+    passwordInput.addEventListener('input', updateCriteriaIcons);
+
+    // Toggle password visibility
+    document.querySelectorAll('.toggle-password').forEach(button => {
+        button.addEventListener('click', function() {
+            const input = this.previousElementSibling;
+            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+            input.setAttribute('type', type);
+            
+            // Update icon
+            const svg = this.querySelector('svg');
+            if (type === 'text') {
+                svg.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                `;
+            } else {
+                svg.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                `;
+            }
+        });
+    });
+
+    // Profile form submission
+    document.getElementById('profile-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const token = localStorage.getItem('access_token');
+        
+        try {
+            const response = await fetch('/api/me', {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: document.getElementById('name').value,
+                    email: document.getElementById('email').value
+                })
+            });
+
+            if (!response.ok) {
+                const error = await response.text();
+                throw new Error(error);
+            }
+
+            showSuccess('Profile updated successfully!');
+        } catch (error) {
+            console.error('Profile update error:', error);
+            alert(error.message || 'Failed to update profile. Please try again.');
+        }
+    });
+
+    // Password form submission
+    document.getElementById('password-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const token = localStorage.getItem('access_token');
+        const newPassword = document.getElementById('new-password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+
+        if (newPassword !== confirmPassword) {
+            showPasswordError('New passwords do not match!');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/me/password', {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    current_password: document.getElementById('current-password').value,
+                    new_password: newPassword
+                })
+            });
+
+            if (!response.ok) {
+                const error = await response.text();
+                throw new Error(error);
+            }
+
+            // Clear form and show success message
+            document.getElementById('password-form').reset();
+            showSuccess('Password updated successfully!');
+        } catch (error) {
+            console.error('Password update error:', error);
+            showPasswordError(error.message || 'Failed to update password. Please try again.');
+        }
+    });
+
+    // Notification settings
+    document.getElementById('email-notifications').addEventListener('change', async function(e) {
+        const token = localStorage.getItem('access_token');
+        try {
+            const response = await fetch('/api/me/notifications', {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email_notifications: e.target.checked
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update notification settings');
+            }
+
+            showSuccess('Notification settings updated!');
+        } catch (error) {
+            console.error('Notification settings update error:', error);
+            e.target.checked = !e.target.checked; // Revert the toggle
+            alert('Failed to update notification settings. Please try again.');
+        }
+    });
+}
+</script>
+{% endblock %} 

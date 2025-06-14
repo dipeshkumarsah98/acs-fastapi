@@ -6,4 +6,10 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
+    EMAIL_USERNAME: str = ""
+    EMAIL_PASSWORD: str = ""  # Google App Password
+    EMAIL_FROM: str = ""
+    EMAIL_PORT: int = 587
+    EMAIL_SERVER: str = "smtp.gmail.com"
+
 settings = Settings()

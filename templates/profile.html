@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Loading State -->
+        <div id="loading-state" class="text-center py-12">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-t-transparent"></div>
+            <p class="mt-4 text-gray-600">Loading profile...</p>
+        </div>
+
+        <!-- Profile Content (initially hidden) -->
+        <div id="profile-content" class="hidden">
+            <!-- Profile Header -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="flex items-center space-x-6">
+                    <div class="h-24 w-24 rounded-full bg-blue-100 flex items-center justify-center">
+                        <span class="text-3xl text-blue-600 font-semibold" id="user-initial"></span>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900" id="user-name"></h1>
+                        <p class="text-gray-600" id="user-email"></p>
+                        <p class="text-sm text-gray-500 mt-1" id="member-since"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Sections -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Personal Information -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Personal Information</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600">Full Name</label>
+                            <p class="mt-1 text-gray-900" id="info-name"></p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600">Email Address</label>
+                            <p class="mt-1 text-gray-900" id="info-email"></p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600">Last Login</label>
+                            <p class="mt-1 text-gray-900" id="info-last-login"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Statistics -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Account Statistics</h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-blue-50 rounded-lg p-4">
+                            <p class="text-sm font-medium text-blue-600">Communities</p>
+                            <p class="text-2xl font-bold text-blue-700">0</p>
+                        </div>
+                        <div class="bg-green-50 rounded-lg p-4">
+                            <p class="text-sm font-medium text-green-600">Posts</p>
+                            <p class="text-2xl font-bold text-green-700">0</p>
+                        </div>
+                        <div class="bg-purple-50 rounded-lg p-4">
+                            <p class="text-sm font-medium text-purple-600">Comments</p>
+                            <p class="text-2xl font-bold text-purple-700">0</p>
+                        </div>
+                        <div class="bg-yellow-50 rounded-lg p-4">
+                            <p class="text-sm font-medium text-yellow-600">Likes</p>
+                            <p class="text-2xl font-bold text-yellow-700">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="bg-white rounded-lg shadow-md p-6 mt-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
+                <div class="text-center py-8">
+                    <p class="text-gray-500">No recent activity to show</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error State (initially hidden) -->
+        <div id="error-state" class="hidden text-center py-12">
+            <div class="text-red-600 mb-4">
+                <svg class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">Authentication Required</h3>
+            <p class="text-gray-600 mb-4">Please log in to view your profile.</p>
+            <a href="/login" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                Go to Login
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', async function() {
+    const token = localStorage.getItem('access_token');
+    const loadingState = document.getElementById('loading-state');
+    const profileContent = document.getElementById('profile-content');
+    const errorState = document.getElementById('error-state');
+
+    if (!token) {
+        showError();
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/me', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Authentication failed');
+        }
+
+        const user = await response.json();
+        showProfile(user);
+    } catch (error) {
+        console.error('Profile loading error:', error);
+        showError();
+    }
+});
+
+function showProfile(user) {
+    // Hide loading state
+    document.getElementById('loading-state').classList.add('hidden');
+    
+    // Show profile content
+    const profileContent = document.getElementById('profile-content');
+    profileContent.classList.remove('hidden');
+
+    // Update profile information
+    document.getElementById('user-initial').textContent = user.name[0];
+    document.getElementById('user-name').textContent = user.name;
+    document.getElementById('user-email').textContent = user.email;
+    document.getElementById('member-since').textContent = `Member since ${new Date(user.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`;
+
+    // Update personal information
+    document.getElementById('info-name').textContent = user.name;
+    document.getElementById('info-email').textContent = user.email;
+    document.getElementById('info-last-login').textContent = user.last_login 
+        ? new Date(user.last_login).toLocaleString()
+        : 'Never';
+}
+
+function showError() {
+    document.getElementById('loading-state').classList.add('hidden');
+    document.getElementById('error-state').classList.remove('hidden');
+    document.getElementById('profile-content').classList.add('hidden');
+}
+</script>
+{% endblock %}

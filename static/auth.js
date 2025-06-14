@@ -1,24 +1,21 @@
-// Check if current page is an auth page
 function isAuthPage() {
     const path = window.location.pathname;
-    return path === '/login' || path === '/register';
+    const allowedPaths = ['/login', '/register', '/verify-email', '/resend-verification', '/forgot-password', '/reset-password'];
+    return allowedPaths.includes(path);
 }
 
-// Check authentication status and handle redirects
 async function checkAuthStatus() {
     const token = localStorage.getItem('access_token');
     const user = JSON.parse(localStorage.getItem('user'));
 
+
     if (token && user) {
         if (isAuthPage()) {
-            // If on auth page and authenticated, redirect to home
             window.location.href = '/';
             return;
         }
     } else {
-        // If not authenticated and trying to access protected pages
         if (!isAuthPage() && window.location.pathname !== '/') {
-            // Check if the current page requires authentication
             try {
                 const response = await fetch('/api/me', {
                     headers: {
@@ -27,10 +24,11 @@ async function checkAuthStatus() {
                 });
                 
                 if (!response.ok) {
-                    // If not authenticated, redirect to login
+                    console.log('Authentication failed, redirecting to login'); // Debug log
                     window.location.href = '/login';
                 }
             } catch (error) {
+                console.error('API call error:', error); // Debug log
                 window.location.href = '/login';
             }
         }
@@ -41,6 +39,7 @@ function updateAuthButtons() {
     const user = JSON.parse(localStorage.getItem('user'));
     const authButtons = document.getElementById('auth-buttons');
     const mobileAuthButtons = document.getElementById('mobile-auth-buttons');
+
 
     if (user) {
         authButtons.innerHTML = `
@@ -112,12 +111,17 @@ function updateAuthButtons() {
 
 async function logout() {
     try {
+        const token = localStorage.getItem('access_token');
+        console.log('Logging out with token:', token); // Debug log
+        
         const response = await fetch('/logout', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                'Authorization': `Bearer ${token}`
             }
         });
+
+        console.log('Logout response:', response.status); // Debug log
 
         if (response.ok) {
             localStorage.removeItem('access_token');
@@ -132,6 +136,7 @@ async function logout() {
 
 // Initialize auth state
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('Initializing auth state...'); // Debug log
     updateAuthButtons();
     checkAuthStatus();
 }); 
