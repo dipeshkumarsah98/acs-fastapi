@@ -15,9 +15,32 @@ function togglePasswordVisibility(inputId, toggleId) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    let solvedCaptchaToken = null;
+
     const loginForm = document.getElementById('loginForm');
     const togglePasswordButton = document.getElementById('toggle-password');
     const passwordInput = document.getElementById('password');
+    const submitButton = loginForm.querySelector('button[type="submit"]');
+
+    // Disable submit button initially
+    if(!solvedCaptchaToken){
+        submitButton.disabled = true;
+        submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+    }
+
+    // Add reCAPTCHA callback
+    window.onRecaptchaSuccess = function(token) {
+        console.log('reCAPTCHA success', token);
+        solvedCaptchaToken = token;
+        submitButton.disabled = false;
+        submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
+    };
+
+    window.onRecaptchaExpired = function() {
+        console.log('reCAPTCHA expired');
+        submitButton.disabled = true;
+        submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+    };
 
     // Toggle password visibility
     togglePasswordButton.addEventListener('click', function() {
@@ -32,6 +55,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle form submission
     loginForm.addEventListener('submit', async function(e) {
         e.preventDefault();
+        if (!solvedCaptchaToken) {
+
+            alert('Please solve the reCAPTCHA');
+
+            return;
+        }
 
         const formData = new FormData(loginForm);
         const email = formData.get('email');
@@ -39,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const rememberMe = formData.get('remember_me') === 'on';
 
         try {
-            const response = await fetch('/login', {
+            const response = await fetch('/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -47,7 +76,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: new URLSearchParams({
                     email: email,
                     password: password,
-                    remember_me: rememberMe
+                    remember_me: rememberMe,
+                    recaptcha_token: solvedCaptchaToken
                 })
             });
 
@@ -61,6 +91,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Redirect to home page
                 window.location.href = '/';
             } else {
+                // reset the captcha
+                window.grecaptcha.reset();
+                solvedCaptchaToken = null;
+                submitButton.disabled = true;
+                submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+
                 console.log(data);
                 // Show error message
                 const errorDiv = document.createElement('div');

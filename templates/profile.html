@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     try {
-        const response = await fetch('/api/me', {
+        const response = await fetch('/profile/api/me', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }

@@ -16,7 +16,6 @@ templates = Jinja2Templates(directory="templates")
 @router.get("", response_class=HTMLResponse)
 async def profile_page(
     request: Request,
-    current_user: User = Depends(get_current_user)
 ):
     """
     Profile page - requires authentication.
@@ -25,14 +24,12 @@ async def profile_page(
         "profile.html",
         {
             "request": request,
-            "user": current_user
         }
     )
 
 @router.get("/settings", response_class=HTMLResponse)
 async def settings_page(
     request: Request,
-    current_user: User = Depends(get_current_user)
 ):
     """
     Settings page - requires authentication.
@@ -41,7 +38,6 @@ async def settings_page(
         "settings.html",
         {
             "request": request,
-            "user": current_user
         }
     )
 

@@ -31,7 +31,7 @@
             </div>
             {% endif %}
 
-            <form class="space-y-6" action="/register" method="POST">
+            <form id="registerForm" class="space-y-6" action="/auth/register" method="POST">
                 <div>
                     <label for="fullname" class="block text-sm font-medium text-gray-700">
                         Full Name
@@ -104,6 +104,16 @@
                         </button>
                     </div>
                     <p id="confirm-password-match" class="mt-1 text-sm"></p>
+                </div>
+
+                <div>
+                    <div class="g-recaptcha" 
+                        id="recaptcha"
+                        name="recaptcha_token"
+                         data-sitekey="6Ldb2mErAAAAALodIYKhZIerksv9Tlw8tHOn9WTT"
+                         data-callback="onRecaptchaSuccess"
+                         data-expired-callback="onRecaptchaExpired"></div>
+                    <input type="hidden" name="recaptcha_token" id="recaptcha_token">
                 </div>
 
                 <div class="bg-gray-50 p-4 rounded-md">

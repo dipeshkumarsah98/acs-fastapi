@@ -1,4 +1,8 @@
+
+var solvedCaptchaToken = null;
+
 const passwordCriteria = {
+
     length: {
         min: 12,
         recommended: 14,
@@ -140,21 +144,46 @@ function updateSubmitButtonState() {
     const passwordsMatch = doPasswordsMatch();
     
     if (submitButton) {
-        submitButton.disabled = !(allCriteriaMet && requiredFieldsFilled && passwordsMatch);
-        submitButton.classList.toggle('opacity-50', !(allCriteriaMet && requiredFieldsFilled && passwordsMatch));
-        submitButton.classList.toggle('cursor-not-allowed', !(allCriteriaMet && requiredFieldsFilled && passwordsMatch));
+        console.log("allCriteriaMet", solvedCaptchaToken);
+        submitButton.disabled = !(allCriteriaMet && requiredFieldsFilled && passwordsMatch && solvedCaptchaToken);
+        submitButton.classList.toggle('opacity-50', !(allCriteriaMet && requiredFieldsFilled && passwordsMatch && solvedCaptchaToken));
+        submitButton.classList.toggle('cursor-not-allowed', !(allCriteriaMet && requiredFieldsFilled && passwordsMatch && solvedCaptchaToken));
     }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+
+    const registerForm = document.getElementById('registerForm');
     const passwordInput = document.getElementById('password');
     const confirmPasswordInput = document.getElementById('confirm_password');
     const emailInput = document.getElementById('email');
     const fullnameInput = document.getElementById('fullname');
-    const form = document.querySelector('form');
+    const submitButton = registerForm.querySelector('button[type="submit"]');
 
     togglePasswordVisibility('password', 'toggle-password');
     togglePasswordVisibility('confirm_password', 'toggle-confirm-password');
+
+    // Disable submit button initially
+    if(!solvedCaptchaToken){
+        submitButton.disabled = true;
+        submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+    }
+
+    // Add reCAPTCHA callback
+    window.onRecaptchaSuccess = function(token) {
+        console.log('reCAPTCHA success', token);
+        solvedCaptchaToken = token;
+        document.getElementById('recaptcha_token').value = token;
+        submitButton.disabled = false;
+        submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
+    };
+
+    window.onRecaptchaExpired = function() {
+        console.log('reCAPTCHA expired');
+        submitButton.disabled = true;
+        submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+    };
+
 
     const requiredInputs = document.querySelectorAll('input[required]');
     requiredInputs.forEach(input => {

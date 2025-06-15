@@ -2,16 +2,17 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Form, Header
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from models import User
-from sqlmodel import Session, select
+from sqlmodel import select
 from auth.database import get_session
 from auth.password import validate_password_strength
 from utils import get_password_hash, verify_password
 from datetime import datetime, timedelta
 from auth.jwt import create_access_token
 from typing import Optional
-from auth.middleware import get_current_user, get_optional_user, prevent_authenticated_user
+from auth.middleware import prevent_authenticated_user
 from auth.email import send_verification_email
 import logging
+from auth.captcha import verify_recaptcha_token
 
 logger = logging.getLogger(__name__)
 
@@ -43,12 +44,20 @@ async def login_user(
     request: Request,
     email: str = Form(...),
     password: str = Form(...),
+    recaptcha_token: str = Form(...),
     _: None = Depends(prevent_authenticated_user)
 ):
     try:
         """
         Login endpoint - only accessible to non-authenticated users.
         """
+        # Verify recaptcha token
+
+        isValidCaptcha = await verify_recaptcha_token(recaptcha_token)
+
+        if not isValidCaptcha:
+            raise HTTPException(status_code=400, detail="Invalid captcha. Please try again.")
+
         session = next(get_session())
         user = session.exec(select(User).where(User.email == email)).one_or_none()
 
@@ -57,24 +66,11 @@ async def login_user(
         
         # Check if email is verified
         if not user.is_email_verified:
-            return templates.TemplateResponse(
-                "login.html",
-                {
-                    "request": request,
-                    "error": "Please verify your email before logging in."
-                }
-            )
-        
-        # Check if account is locked
+            raise HTTPException(status_code=401, detail="Please verify your email before logging in.")
+
         if user.account_locked_until and user.account_locked_until > datetime.utcnow():
             remaining_time = (user.account_locked_until - datetime.utcnow()).total_seconds() / 60
-            return templates.TemplateResponse(
-                "login.html",
-                {
-                    "request": request,
-                    "error": f"Account is locked. Please try again in {int(remaining_time)} minutes."
-                }
-            )
+            raise HTTPException(status_code=401, detail=f"Account is locked. Please try again in {int(remaining_time)} minutes.")
         
         if not verify_password(password, user.password):
             # Increment failed login attempts
@@ -86,13 +82,7 @@ async def login_user(
                 user.failed_login_attempts = 0
                 session.add(user)
                 session.commit()
-                return templates.TemplateResponse(
-                    "login.html",
-                    {
-                        "request": request,
-                        "error": "Account locked for 15 minutes due to multiple failed attempts."
-                    }
-                )
+                raise HTTPException(status_code=401, detail="Account locked for 15 minutes due to multiple failed attempts.")
             
             session.add(user)
             session.commit()
@@ -129,11 +119,27 @@ async def register_user(
     email: str = Form(...),
     password: str = Form(...),
     gender: str = Form(...),
+    recaptcha_token: str = Form(...),
     _: None = Depends(prevent_authenticated_user),
 ):
     """
     Registration endpoint - only accessible to non-authenticated users.
     """
+    print("--------------------------------")
+    print("recaptcha_token", recaptcha_token)
+    print("--------------------------------")
+
+    isValidCaptcha = await verify_recaptcha_token(recaptcha_token)
+
+    if not isValidCaptcha:
+        return templates.TemplateResponse(
+            "register.html",
+            {
+                "request": request,
+                "error": "Invalid captcha. Please try again."
+            }
+        )
+
     session = next(get_session())
     
     # Check if user already exists
@@ -191,7 +197,7 @@ async def register_user(
         )
     
     # Redirect to verification page
-    return RedirectResponse(url="/verify-email", status_code=303)
+    return RedirectResponse(url="/auth/verify-email", status_code=303)
 
 @router.get("/verify-email", response_class=HTMLResponse)
 async def verify_email_page(
@@ -238,13 +244,8 @@ async def verify_email(
     session.add(user)
     session.commit()
     
-    return templates.TemplateResponse(
-        "login.html",
-        {
-            "request": request,
-            "message": "Email verified successfully. Please login."
-        }
-    )
+    return RedirectResponse(url="/auth/login", status_code=303)
+    
 
 @router.get("/resend-verification", response_class=HTMLResponse)
 async def resend_verification(

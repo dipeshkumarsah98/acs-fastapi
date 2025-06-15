@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     try {
-        const response = await fetch('/api/me', {
+        const response = await fetch('/profile/api/me', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -430,7 +430,7 @@ function setupEventListeners() {
         const token = localStorage.getItem('access_token');
         
         try {
-            const response = await fetch('/api/me', {
+            const response = await fetch('/profile/api/me', {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,

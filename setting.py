@@ -12,4 +12,6 @@ class Settings(BaseSettings):
     EMAIL_PORT: int = 587
     EMAIL_SERVER: str = "smtp.gmail.com"
 
+    RECAPTCHA_SECRET_KEY: str = None
+
 settings = Settings()

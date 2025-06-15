@@ -1,6 +1,6 @@
 function isAuthPage() {
     const path = window.location.pathname;
-    const allowedPaths = ['/login', '/register', '/verify-email', '/resend-verification', '/forgot-password', '/reset-password'];
+    const allowedPaths = ['/auth/login', '/auth/register', '/auth/verify-email', '/auth/resend-verification', '/auth/forgot-password', '/auth/reset-password'];
     return allowedPaths.includes(path);
 }
 
@@ -17,7 +17,7 @@ async function checkAuthStatus() {
     } else {
         if (!isAuthPage() && window.location.pathname !== '/') {
             try {
-                const response = await fetch('/api/me', {
+                const response = await fetch('/profile/api/me', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -59,7 +59,7 @@ function updateAuthButtons() {
                     style="transform-origin: top right;"
                 >
                     <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
-                    <a href="/settings" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+                    <a href="/profile/settings" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
                     <button onclick="logout()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Logout</button>
                 </div>
             </div>
@@ -98,13 +98,13 @@ function updateAuthButtons() {
         `;
     } else {
         authButtons.innerHTML = `
-            <a href="/login" class="text-gray-700 hover:text-blue-600 transition duration-300">Login</a>
-            <a href="/register" class="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition duration-300">Register</a>
+            <a href="/auth/login" class="text-gray-700 hover:text-blue-600 transition duration-300">Login</a>
+            <a href="/auth/register" class="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition duration-300">Register</a>
         `;
 
         mobileAuthButtons.innerHTML = `
-            <a href="/login" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Login</a>
-            <a href="/register" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Register</a>
+            <a href="/auth/login" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Login</a>
+            <a href="/auth/register" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Register</a>
         `;
     }
 }
@@ -114,7 +114,7 @@ async function logout() {
         const token = localStorage.getItem('access_token');
         console.log('Logging out with token:', token); // Debug log
         
-        const response = await fetch('/logout', {
+        const response = await fetch('/auth/logout', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`
