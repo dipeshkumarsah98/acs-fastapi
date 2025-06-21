@@ -1,6 +1,14 @@
 function isAuthPage() {
     const path = window.location.pathname;
-    const allowedPaths = ['/auth/login', '/auth/register', '/auth/verify-email', '/auth/resend-verification', '/auth/forgot-password', '/auth/reset-password'];
+    const allowedPaths = ['/auth/login', 
+        '/auth/register', 
+        '/auth/verify-email',
+         '/auth/resend-verification', 
+         '/auth/forgot-password', 
+         '/auth/reset-password', 
+         '/password/forgot', 
+         '/password/reset'];
+
     return allowedPaths.includes(path);
 }
 

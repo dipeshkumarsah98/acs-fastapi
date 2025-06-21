@@ -63,7 +63,7 @@ async def forgot_password(
     session.commit()
     
     # Send reset email
-    reset_link = f"{request.base_url}reset-password?token={reset_token}"
+    reset_link = f"{request.base_url}password/reset?token={reset_token}"
     email_sent = await send_password_reset_email(email=email, reset_link=reset_link)
     
     if not email_sent:
