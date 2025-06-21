@@ -32,6 +32,17 @@ async def root(request: Request):
         context={}
     )
 
+@app.get("/about")
+async def about(request: Request):
+    """
+    About page endpoint - serves the about page.
+    """
+    return templates.TemplateResponse(
+        request=request,
+        name="about.html",
+        context={}
+    )
+
 @app.get("/protected-route")
 async def protected_route(current_user: User = Depends(get_current_user)):
     """

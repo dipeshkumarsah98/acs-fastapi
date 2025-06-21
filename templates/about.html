@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% block title %}About Us{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+        <div class="container mx-auto px-6 py-20">
+            <div class="text-center">
+                <h1 class="text-5xl font-bold mb-4">About Our Communities</h1>
+                <p class="text-xl mb-8">Building meaningful connections and fostering growth through shared interests</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mission & Vision -->
+    <div class="py-16 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <!-- Mission -->
+                <div class="bg-white rounded-lg shadow-md p-8">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold mb-4">Our Mission</h2>
+                    <p class="text-gray-600 text-lg leading-relaxed">
+                        To create a platform where people can discover, join, and build communities around their passions. 
+                        We believe that meaningful connections happen when people share common interests and goals.
+                    </p>
+                </div>
+
+                <!-- Vision -->
+                <div class="bg-white rounded-lg shadow-md p-8">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold mb-4">Our Vision</h2>
+                    <p class="text-gray-600 text-lg leading-relaxed">
+                        A world where everyone can find their tribe - where technology brings people together 
+                        instead of driving them apart, and where every individual feels connected and supported.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Our Story -->
+    <div class="py-16">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="text-3xl font-bold mb-8">Our Story</h2>
+                <p class="text-gray-600 text-lg leading-relaxed mb-8">
+                    Founded in 2024, our platform was born from a simple observation: in an increasingly digital world, 
+                    people were craving authentic connections based on shared interests. What started as a small project 
+                    has grown into a vibrant ecosystem where thousands of communities thrive.
+                </p>
+                <p class="text-gray-600 text-lg leading-relaxed">
+                    Today, we're proud to host communities ranging from tech enthusiasts and book lovers to creative 
+                    professionals and hobbyists. Every day, we see new friendships formed, knowledge shared, and 
+                    collaborations born through our platform.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Values -->
+    <div class="py-16 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center mb-12">Our Values</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Authenticity -->
+                <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                    <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Authenticity</h3>
+                    <p class="text-gray-600">We believe in real connections and genuine interactions. No bots, no fake profiles, just real people sharing real interests.</p>
+                </div>
+
+                <!-- Inclusivity -->
+                <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Inclusivity</h3>
+                    <p class="text-gray-600">Everyone is welcome here. We celebrate diversity and create safe spaces for all voices to be heard.</p>
+                </div>
+
+                <!-- Growth -->
+                <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Growth</h3>
+                    <p class="text-gray-600">We're committed to continuous improvement, both as a platform and in helping our communities grow and evolve.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="py-16 bg-blue-600 text-white">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
+                <div>
+                    <div class="text-4xl font-bold mb-2">10K+</div>
+                    <div class="text-blue-100">Active Members</div>
+                </div>
+                <div>
+                    <div class="text-4xl font-bold mb-2">500+</div>
+                    <div class="text-blue-100">Communities</div>
+                </div>
+                <div>
+                    <div class="text-4xl font-bold mb-2">50+</div>
+                    <div class="text-blue-100">Countries</div>
+                </div>
+                <div>
+                    <div class="text-4xl font-bold mb-2">24/7</div>
+                    <div class="text-blue-100">Support</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="py-16">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl font-bold mb-4">Join Our Growing Community</h2>
+            <p class="text-xl text-gray-600 mb-8">Be part of something bigger. Start connecting with people who share your interests today.</p>
+            <a href="/register" class="bg-blue-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-blue-700 transition duration-300">Get Started</a>
+        </div>
+    </div>
+{% endblock %}
